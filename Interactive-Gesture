@@ -1,39 +1,56 @@
 import cv2
 import mediapipe as mp
 
-# Initialize MediaPipe Hands and Drawing utilities
+# Initialize Mediapipe Hands and Drawing utilities
 mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
 
-# Start webcam
+# Start capturing video from the webcam
 cap = cv2.VideoCapture(0)
 
-# Check if webcam is opened correctly
+# Check if the webcam is opened successfully
 if not cap.isOpened():
     print("Error: Could not open video capture.")
     exit()
 
-with mp_hands.Hands(min_detection_confidence=0.5, min_tracking_confidence=0.5) as hands:
+# Mediapipe Hands initialization
+with mp_hands.Hands(
+    static_image_mode=False,        # Use False for continuous detection (real-time).
+    max_num_hands=2,                # Maximum number of hands to detect.
+    min_detection_confidence=0.5,   # Minimum confidence for detection.
+    min_tracking_confidence=0.5     # Minimum confidence for tracking the hand.
+) as hands:
     while True:
         ret, frame = cap.read()
         if not ret:
-            print("Error: Failed to grab frame")
+            print("Failed to grab frame")
             break
 
-        frame = cv2.flip(frame, 1)  # Mirror the frame
+        # Flip the frame horizontally for a mirror effect
+        frame = cv2.flip(frame, 1)
+        
+        # Convert the frame to RGB (MediaPipe requires RGB format)
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
+        # Process the frame with Mediapipe Hands
         result = hands.process(rgb_frame)
 
+        # Draw hand landmarks if detected
         if result.multi_hand_landmarks:
-            for landmarks in result.multi_hand_landmarks:
-                mp_drawing.draw_landmarks(frame, landmarks, mp_hands.HAND_CONNECTIONS)
+            for hand_landmarks in result.multi_hand_landmarks:
+                mp_drawing.draw_landmarks(
+                    frame, hand_landmarks, mp_hands.HAND_CONNECTIONS,
+                    mp_drawing.DrawingSpec(color=(0, 255, 0), thickness=2, circle_radius=2),
+                    mp_drawing.DrawingSpec(color=(255, 0, 0), thickness=2)
+                )
 
-        cv2.imshow('Hand Detection', frame)
+        # Display the processed frame
+        cv2.imshow('Interactive Human Gesture', frame)
 
+        # Break the loop if 'q' is pressed
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
+# Release the webcam and close any open windows
 cap.release()
 cv2.destroyAllWindows()
-
