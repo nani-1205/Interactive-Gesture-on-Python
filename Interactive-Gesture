@@ -1,5 +1,6 @@
 import cv2
 import mediapipe as mp
+import time
 
 # Initialize MediaPipe Hands and Drawing utilities
 mp_hands = mp.solutions.hands
@@ -18,9 +19,10 @@ with mp_hands.Hands(
     min_detection_confidence=0.5,
     min_tracking_confidence=0.5
 ) as hands:
-    print("Press 'q' to exit the application.")
-    while True:
-        # Read a frame from the webcam
+    print("Press 'q' to quit the application.")
+    
+    prev_time = 0  # To calculate FPS
+    while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
             print("Error: Failed to grab frame.")
@@ -28,8 +30,11 @@ with mp_hands.Hands(
 
         # Flip the frame horizontally for a mirror effect
         frame = cv2.flip(frame, 1)
-        
-        # Convert the frame from BGR to RGB for MediaPipe processing
+
+        # Resize the frame to improve processing speed
+        frame = cv2.resize(frame, (640, 480))
+
+        # Convert the frame to RGB for MediaPipe processing
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
         # Process the frame to detect hands
@@ -39,12 +44,24 @@ with mp_hands.Hands(
         if result.multi_hand_landmarks:
             for hand_landmarks in result.multi_hand_landmarks:
                 mp_drawing.draw_landmarks(
-                    frame, 
-                    hand_landmarks, 
+                    frame,
+                    hand_landmarks,
                     mp_hands.HAND_CONNECTIONS,
                     mp_drawing.DrawingSpec(color=(0, 255, 0), thickness=2, circle_radius=2),  # Landmarks
                     mp_drawing.DrawingSpec(color=(255, 0, 0), thickness=2)  # Connections
                 )
+
+                # Print hand landmarks (Optional, for debugging)
+                for idx, landmark in enumerate(hand_landmarks.landmark):
+                    print(f"Landmark {idx}: (X: {landmark.x}, Y: {landmark.y}, Z: {landmark.z})")
+
+        # Calculate FPS
+        curr_time = time.time()
+        fps = 1 / (curr_time - prev_time)
+        prev_time = curr_time
+
+        # Display FPS on the frame
+        cv2.putText(frame, f'FPS: {int(fps)}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
         # Display the processed frame
         cv2.imshow('Hand Detection', frame)
@@ -57,4 +74,3 @@ with mp_hands.Hands(
 # Release webcam resources and close OpenCV windows
 cap.release()
 cv2.destroyAllWindows()
-     -----------------------------------------code-updated----------------------------------------------------@@@@@@@@@@
