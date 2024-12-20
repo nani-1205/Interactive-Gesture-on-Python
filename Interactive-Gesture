@@ -57,4 +57,4 @@ with mp_hands.Hands(
 # Release webcam resources and close OpenCV windows
 cap.release()
 cv2.destroyAllWindows()
-     -----------------------------------------code-updated-------------------------------------------------------
+     -----------------------------------------code-updated----------------------------------------------------@@@@@@@@@@
