@@ -8,19 +8,32 @@ mp_drawing = mp.solutions.drawing_utils
 # Start capturing video from the webcam
 cap = cv2.VideoCapture(0)
 
+<<<<<<< HEAD
 # Check if the camera was opened successfully
+=======
+# Check if the webcam is opened successfully
+>>>>>>> 6c5bbe5202e9d4fe767dbef609fb2acaf2c7d7b9
 if not cap.isOpened():
     print("Error: Camera not found or could not be opened.")
     exit()
 
 # Mediapipe Hands initialization
 with mp_hands.Hands(
+<<<<<<< HEAD
     static_image_mode=False,
     max_num_hands=2,
     min_detection_confidence=0.5,
     min_tracking_confidence=0.5
 ) as hands:
     while cap.isOpened():
+=======
+    static_image_mode=False,        # Use False for continuous detection (real-time).
+    max_num_hands=2,                # Maximum number of hands to detect.
+    min_detection_confidence=0.5,   # Minimum confidence for detection.
+    min_tracking_confidence=0.5     # Minimum confidence for tracking the hand.
+) as hands:
+    while True:
+>>>>>>> 6c5bbe5202e9d4fe767dbef609fb2acaf2c7d7b9
         ret, frame = cap.read()
         if not ret:
             print("Failed to grab frame")
@@ -28,6 +41,11 @@ with mp_hands.Hands(
 
         # Flip the frame horizontally for a mirror effect
         frame = cv2.flip(frame, 1)
+<<<<<<< HEAD
+=======
+        
+        # Convert the frame to RGB (MediaPipe requires RGB format)
+>>>>>>> 6c5bbe5202e9d4fe767dbef609fb2acaf2c7d7b9
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
         # Process the frame with Mediapipe Hands
@@ -42,15 +60,25 @@ with mp_hands.Hands(
                     mp_drawing.DrawingSpec(color=(255, 0, 0), thickness=2)
                 )
 
+<<<<<<< HEAD
         # Display the frame with hand landmarks
         cv2.imshow('Interactive Human Gesture', frame)
 
         # Break the loop if 'q' is pressed (make sure to check for key press properly)
+=======
+        # Display the processed frame
+        cv2.imshow('Interactive Human Gesture', frame)
+
+        # Break the loop if 'q' is pressed
+>>>>>>> 6c5bbe5202e9d4fe767dbef609fb2acaf2c7d7b9
         if cv2.waitKey(1) & 0xFF == ord('q'):
             print("Exiting...")
             break
 
+<<<<<<< HEAD
 # Release resources
+=======
+# Release the webcam and close any open windows
+>>>>>>> 6c5bbe5202e9d4fe767dbef609fb2acaf2c7d7b9
 cap.release()
 cv2.destroyAllWindows()
-
