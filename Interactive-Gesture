@@ -55,11 +55,29 @@ with mp_hands.Hands(
                 for idx, landmark in enumerate(hand_landmarks.landmark):
                     print(f"Landmark {idx}: (X: {landmark.x}, Y: {landmark.y}, Z: {landmark.z})")
 
-                # Gesture detection: Check for a "thumb up" gesture (based on index and thumb landmarks)
+                # Gesture detection: Check for various gestures
+
+                # "Thumb Up" gesture (thumb raised, index and other fingers down)
                 thumb_tip = hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_TIP]
                 index_tip = hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP]
                 if thumb_tip.y < index_tip.y:  # Simple condition for thumb up gesture
                     cv2.putText(frame, "Thumb Up Gesture", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
+
+                # "Peace Sign" gesture (index and middle fingers raised)
+                index_finger_tip = hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP]
+                middle_finger_tip = hand_landmarks.landmark[mp_hands.HandLandmark.MIDDLE_FINGER_TIP]
+                if index_finger_tip.y < middle_finger_tip.y:  # Index is above middle for peace sign
+                    cv2.putText(frame, "Peace Sign Gesture", (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 2)
+
+                # "Fist" gesture (all fingers curled)
+                pinky_tip = hand_landmarks.landmark[mp_hands.HandLandmark.PINKY_TIP]
+                if all([
+                    hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_TIP].y > thumb_tip.y,
+                    hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].y > index_finger_tip.y,
+                    hand_landmarks.landmark[mp_hands.HandLandmark.MIDDLE_FINGER_TIP].y > middle_finger_tip.y,
+                    hand_landmarks.landmark[mp_hands.HandLandmark.RING_FINGER_TIP].y > pinky_tip.y
+                ]):
+                    cv2.putText(frame, "Fist Gesture", (10, 120), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
         # Calculate FPS
         curr_time = time.time()
