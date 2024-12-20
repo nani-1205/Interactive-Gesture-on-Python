@@ -50,6 +50,16 @@ with mp_hands.Hands(
                     mp_drawing.DrawingSpec(color=(0, 255, 0), thickness=2, circle_radius=2),
                     mp_drawing.DrawingSpec(color=(255, 0, 0), thickness=2)
                 )
+                
+                # Additional feature: Print the detected hand landmarks coordinates
+                for idx, landmark in enumerate(hand_landmarks.landmark):
+                    print(f"Landmark {idx}: (X: {landmark.x}, Y: {landmark.y}, Z: {landmark.z})")
+
+                # Gesture detection: Check for a "thumb up" gesture (based on index and thumb landmarks)
+                thumb_tip = hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_TIP]
+                index_tip = hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP]
+                if thumb_tip.y < index_tip.y:  # Simple condition for thumb up gesture
+                    cv2.putText(frame, "Thumb Up Gesture", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
 
         # Calculate FPS
         curr_time = time.time()
